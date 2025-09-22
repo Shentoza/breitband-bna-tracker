@@ -26,7 +26,7 @@ const INTERVAL_MINUTES = Number(process.env.INTERVAL_MINUTES ?? 60);
 const sleep = (seconds) => new Promise((res) => setTimeout(res, seconds * 1000));
 try {
   if (INTERVAL_MINUTES > 0) {
-    console.log(`Running speedtest every ${INTERVAL_MINUTES} seconds`);
+    console.log(`Running speedtest every ${INTERVAL_MINUTES} minutes`);
     while (true) {
       console.log(`${getTimestamp()} - Starting new speedtest...`);
       await RunSpeedtest(onSuccess);
