@@ -1,18 +1,32 @@
-FROM node:22.5.1-bookworm-slim
+FROM node:24-bookworm-slim
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV EXPORT_PATH=/export
 ENV TZ="Europe/Berlin"
 
-RUN  apt-get update \
-     && apt-get install -y procps libxss1 chromium \
-     && rm -rf /var/lib/apt/lists/*
 
-# Create app directory
+# Copy package files and install deps
+RUN  apt-get update
+RUN apt-get install -y procps libxss1 chromium
+RUN rm -rf /var/lib/apt/lists/*
+
 WORKDIR /usr/src/app
-
 COPY package.json yarn.lock ./
 
-RUN yarn install &&\
-    mkdir /export
+RUN yarn install --frozen-lockfile --production=false
 
-COPY index.js ./
 
-CMD [ "node", "index.js" ]
+# Copy app sources
+COPY ./*.js .
+
+# Ensure export dir exists
+RUN mkdir -p ${EXPORT_PATH} 
+RUN chown node:node ${EXPORT_PATH} || true
+
+# Expose export as a mount point
+VOLUME ["${EXPORT_PATH}"]
+
+# Run as unprivileged user
+USER node
+
+CMD ["node", "index.js"]

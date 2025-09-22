@@ -1,6 +1,5 @@
-import { parse } from "csv-parse/sync";
 import { promises as fs } from "fs";
-import path from "path";
+
 
 export async function getLatestFile(dir) {
   const files = await fs.promises.readdir(dir);
@@ -12,16 +11,6 @@ export async function getLatestFile(dir) {
   );
   fileStats.sort((a, b) => b.mtime - a.mtime);
   return fileStats.length ? path.join(dir, fileStats[0].file) : null;
-}
-
-export async function readResultCsv(file) {
-  const content = await fs.readFile(file);
-  return parse(content, {
-    bom: true,
-    delimiter: ";",
-    columns: true,
-    skip_empty_lines: true,
-  });
 }
 
 export async function fulfillsRequirement(

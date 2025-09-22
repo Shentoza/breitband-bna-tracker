@@ -1,16 +1,99 @@
-import fs from "fs";
+import { promises as fs } from "fs";
+import { resolve } from "path";
+import puppeteer from "puppeteer";
+import { START_HEADLESS, EXPORT_PATH, BASE_URL } from "./config.js";
 
-export const selectors = {
-  start_test: "#root > div > div > div > div > div > button",
-  accept_policy:
-    "#root > div > div.fade.modal-md.modal.show > div > div > div.justify-content-between.modal-footer > button:nth-child(2)",
-  download_results:
-    "#root > div > div > div > div > div.messung-options.col.col-12.text-md-right > button.px-0.px-sm-4.btn.btn-link",
+export async function RunSpeedtest(onSuccess = (filePath) => {
+  console.log(`Speedtest completed. CSV file at: ${filePath}`);
+}) {
+  try {
+    const executablePath = process.env.CHROME_PATH || undefined; // For Docker chrome is installed. 
+    const browser = await puppeteer.launch({
+      executablePath,
+      headless: START_HEADLESS,
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    });
+    const context = browser.defaultBrowserContext();
+    await context.overridePermissions(BASE_URL, []);
+    const page = await browser.newPage();
+    await page.setViewport({
+      width: 2024,
+      height: 2024,
+      deviceScaleFactor: 1,
+    });
+
+    const client = await page.createCDPSession();
+    await client.send("Page.setDownloadBehavior", {
+      behavior: "allow",
+      downloadPath: EXPORT_PATH,
+    });
+    
+    try {
+      //open website and wait till it is loaded
+      await Promise.all([
+        page.goto(`${BASE_URL}/test`),
+        page.waitForNavigation({ waitUntil: "networkidle2" }),
+      ]);
+      
+      console.log("Starting Speedtest");
+      await clickButton(browser, page, selectors.start_test);
+      await clickButton(browser, page, selectors.accept_policy);
+      console.log("Running Speedtest");
+      try {
+        await page.waitForSelector(selectors.download_results, {
+          timeout: 300 * 10 ** 3,
+          visible: true,
+        });
+        console.log("Speedtest finished");
+      } catch (err) {
+        console.log("could not find results for download");
+        console.log(err);
+        await browser.close();
+        return;
+      }
+      await clickButton(browser, page, selectors.download_results);
+      const newFile = await waitForCsvDownload(EXPORT_PATH, 5000);
+      if (newFile) {
+        onSuccess(newFile.fullpath);
+      } else {
+      }
+      await browser.close();
+      return;
+    } catch (err) {
+      console.log("fatal error");
+      console.log(err);
+      await browser.close();
+      return;
+    }
+  } catch (error) {
+    console.log("Error starting puppeteer");
+    console.log(error);
+    return;
+  }
 };
 
-export const base_url = "https://breitbandmessung.de";
+async function waitForCsvDownload(dir, timeout = 5000) {
+  console.log(dir);
+  const startFiles = await fs.readdir(dir);
+  const startSet = new Set(startFiles);
+  let foundFile = null;
+  const start = Date.now();
+  while (Date.now() - start < timeout) {
+    const files = await fs.readdir(dir);
+    for (const file of files) {
+      if (!startSet.has(file) && file.endsWith(".csv")) {
+        foundFile = file;
+        break;
+      }
+    }
+    await new Promise((res) => setTimeout(res, 500));
+    if (foundFile) break;
+  }
+  await fs.chmod(dir, "777");
+  return { filename: foundFile, fullpath: resolve(dir, foundFile) };
+}
 
-export async function clickButton(
+async function clickButton(
   browser,
   page,
   selector,
@@ -33,22 +116,10 @@ export async function clickButton(
   }
 }
 
-
-export async function waitForCsvDownload(dir, timeout = 5000) {
-      const startFiles = await fs.promises.readdir(dir);
-      const startSet = new Set(startFiles);
-      let foundFile = null;
-      const start = Date.now();
-      while (Date.now() - start < timeout) {
-        const files = await fs.promises.readdir(dir);
-        for (const file of files) {
-          if (!startSet.has(file) && file.endsWith(".csv")) {
-            foundFile = file;
-            break;
-          }
-        }
-        await new Promise((res) => setTimeout(res, 500));
-        if (foundFile) break;
-      }
-      return foundFile;
-    }
+const selectors = {
+  start_test: "#root > div > div > div > div > div > button",
+  accept_policy:
+    "#root > div > div.fade.modal-md.modal.show > div > div > div.justify-content-between.modal-footer > button:nth-child(2)",
+  download_results:
+    "#root > div > div > div > div > div.messung-options.col.col-12.text-md-right > button.px-0.px-sm-4.btn.btn-link",
+};
