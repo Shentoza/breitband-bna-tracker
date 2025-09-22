@@ -3,6 +3,7 @@ FROM node:24-bookworm-slim
 ENV DEBIAN_FRONTEND=noninteractive
 ENV EXPORT_PATH=/export
 ENV TZ="Europe/Berlin"
+ENV CHROME_PATH=/usr/bin/chromium
 
 
 # Copy package files and install deps
