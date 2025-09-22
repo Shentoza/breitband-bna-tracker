@@ -39,3 +39,5 @@ jobs:
             shentoza/breitbandmessung-mqtt:${{ steps.version.outputs.version }}
             shentoza/breitbandmessung-mqtt:${{ github.sha }}
             shentoza/breitbandmessung-mqtt:latest
+          cache-from: type=registry,ref=shentoza/breitbandmessung-mqtt:buildcache
+          cache-to: type=registry,ref=shentoza/breitbandmessung-mqtt:buildcache,mode=max
