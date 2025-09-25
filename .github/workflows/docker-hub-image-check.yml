@@ -19,7 +19,7 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     - name: Run Docker container
       id: run_container
-      run: docker run --rm shentoza/breitbandmessung-mqtt:latest
+      run: docker run --rm shentoza/breitband-bna-tracker:latest
     - name: Check exit code
       run: |
         if [ "${{ steps.run_container.outputs.exitcode }}" -ne 0 ]; then
