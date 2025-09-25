@@ -34,8 +34,8 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            shentoza/breitbandmessung-mqtt:${{ steps.version.outputs.version }}
-            shentoza/breitbandmessung-mqtt:${{ github.sha }}
-            shentoza/breitbandmessung-mqtt:latest
-          cache-from: type=registry,ref=shentoza/breitbandmessung-mqtt:buildcache
-          cache-to: type=registry,ref=shentoza/breitbandmessung-mqtt:buildcache,mode=max
+            shentoza/breitband-bna-tracker:${{ steps.version.outputs.version }}
+            shentoza/breitband-bna-tracker:${{ github.sha }}
+            shentoza/breitband-bna-tracker:latest
+          cache-from: type=registry,ref=shentoza/breitband-bna-tracker:buildcache
+          cache-to: type=registry,ref=shentoza/breitband-bna-tracker:buildcache,mode=max
