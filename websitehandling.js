@@ -3,7 +3,7 @@ import { resolve } from "path";
 import puppeteer from "puppeteer";
 import { START_HEADLESS, EXPORT_PATH, BASE_URL } from "./config.js";
 
-export async function RunSpeedtest(onSuccess = (filePath) => {
+export async function RunSpeedtest(onSuccess = async (filePath) => {
   console.log(`Speedtest completed. CSV file at: ${filePath}`);
 }) {
   try {
@@ -35,7 +35,6 @@ export async function RunSpeedtest(onSuccess = (filePath) => {
         page.waitForNavigation({ waitUntil: "networkidle2" }),
       ]);
       
-      console.log("Starting Speedtest");
       await clickButton(browser, page, selectors.start_test);
       await clickButton(browser, page, selectors.accept_policy);
       console.log("Running Speedtest");

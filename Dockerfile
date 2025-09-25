@@ -4,6 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV EXPORT_PATH=/export
 ENV TZ="Europe/Berlin"
 ENV CHROME_PATH=/usr/bin/chromium
+ENV CONFIG_PATH=/usr/src/app/config
 
 
 # Copy package files and install deps
@@ -26,6 +27,9 @@ RUN chown node:node ${EXPORT_PATH} || true
 
 # Expose export as a mount point
 VOLUME ["${EXPORT_PATH}"]
+
+VOLUME ["${CONFIG_PATH}"]
+COPY ./config.json ${CONFIG_PATH}/config.json
 
 # Run as unprivileged user
 USER node
