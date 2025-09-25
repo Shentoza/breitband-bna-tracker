@@ -1,0 +1,17 @@
+{
+    "mailer": {
+        "smtp": {
+            "host": "your.smtp",
+            "port": 465,
+            "secure": true,
+            "auth": {
+                "user": "user@domain.com",
+                "pass": "yourpassword"
+            }
+        },
+        "enabled": false,
+        "sendStatus": false,
+        "sendTo": "recipient@mail.de",
+        "sendFrom": "\"Sender Name\" <send@domain.com>"
+    }
+}

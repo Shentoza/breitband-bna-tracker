@@ -1,6 +1,4 @@
 import mqtt from "mqtt";
-import { promises as fs } from "fs";
-import { parse } from "csv-parse/sync";
 
 export function connectMqtt() {
   const client = mqtt.connect(process.env.MQTT_SERVER, {
@@ -21,8 +19,7 @@ export function connectMqtt() {
   return client;
 }
 
-export async function publishResult(client, file) {
-  const result = await readResultCsv(file);
+export async function publishResult(client, result) {
   const topic = process.env.MQTT_TOPIC || "mqtt-breitbandmessung";
   if (result) {
     console.log(JSON.stringify(result));
@@ -35,24 +32,5 @@ export async function publishResult(client, file) {
       }
     );
     console.log(`Published result to MQTT in topic ${topic} - Download: ${result['Download (Mbit/s)']} Mbit/s | Upload: ${result['Upload (Mbit/s)']} Mbit/s | Ping: ${result['Laufzeit (ms)']} ms`);
-  }
-}
-
-async function readResultCsv(file) {
-  try {
-    const content = await fs.readFile(file);
-    const result = parse(content, {
-      bom: true,
-      delimiter: ";",
-      columns: true,
-      skip_empty_lines: true,
-    })[0];
-    result['Download (Mbit/s)'] = parseFloat(result['Download (Mbit/s)'].replace(',', '.'));
-    result['Upload (Mbit/s)'] = parseFloat(result['Upload (Mbit/s)'].replace(',', '.'));
-    result['Laufzeit (ms)'] = parseFloat(result['Laufzeit (ms)'].replace(',', '.'));
-    return result;
-  } catch (err) {
-    console.error("Error reading CSV file:", err);
-    return null;
   }
 }
