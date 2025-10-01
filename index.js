@@ -16,17 +16,23 @@ function getTimestamp() {
 }
 
 await fs.chmod(EXPORT_PATH, "777");
-const mqtt = connectMqtt();
+const mqtt = await connectMqtt();
 const mailer = await createMailer();
 
 const onFinished = async (filePath) => {
   console.log(`${getTimestamp()} - Speedtest finished, CSV: ${filePath}`);
-  const result = await readResultCsv(filePath);
-  if(mqtt?.isEnabled){
-    publishResult(mqtt, result);
+  try {
+    const result = await readResultCsv(filePath);
+    console.log(`Results -  Download: ${result["Download (Mbit/s)"]} Mbit/s | Upload: ${result["Upload (Mbit/s)"]} Mbit/s | Ping: ${result["Laufzeit (ms)"]} ms`);
+    if (mqtt?.isEnabled) {
+      publishResult(mqtt, result);
+    }
+    if (mailer?.config?.enabled && mailer?.config?.sendStatus) {
+      sendStatusEmail(mailer, result);
+    }
   }
-  if (mailer?.isEnabled && mailer?.sendStatus) {
-    sendStatusEmail(mailer, result);
+  catch (err) {
+    console.error("Error processing speedtest result:", err);
   }
 }
 
@@ -48,5 +54,7 @@ try {
   }
 }
 finally {
-  mqtt.end();
+  if (mqtt?.isEnabled) {
+    mqtt?.client.end();
+  }
 }

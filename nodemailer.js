@@ -3,20 +3,27 @@ import { getMailerConfig } from './config.js';
 
 export async function createMailer() {
     const mailerConfig = await getMailerConfig();
-    if (mailerConfig?.enabled !== true) {
-        return null;
+    if (mailerConfig) {
+        try {
+            const transport = nodemailer.createTransport(mailerConfig.smtp);
+            const { smtp: _, ...configRest } = mailerConfig;
+            return {
+                transport,
+                config: configRest,
+            };
+        }
+        catch (err) {
+            console.error('Error creating mail transporter:', err);
+            return { transport: null, config: null };
+        }
     }
-    const transport = nodemailer.createTransport(mailerConfig.smtp);
-    return {
-        transport,
-        sendStatus: mailerConfig.sendStatus,
-        sendFrom: mailerConfig.sendFrom,
-        sendTo: mailerConfig.sendTo
-    };
+    console.log('Mailer not configured');
+    return null;
 }
 
 export async function sendStatusEmail(mailer, result) {
-    if (!mailer.transport) return;
+    const { transport, config } = mailer;
+    if (!transport) return;
     const ping = result['Laufzeit (ms)'] ?? 'n/a' + ' ms';
     const download = result['Download (Mbit/s)'] ?? 'n/a' + ' Mbit/s';
     const upload = result['Upload (Mbit/s)'] ?? 'n/a' + ' Mbit/s';
@@ -36,9 +43,9 @@ export async function sendStatusEmail(mailer, result) {
     ${result['Test-ID'] ? `<p>Test-ID: <code>${result['Test-ID']}</code></p>` : ''}`;
 
     try {
-        const info = await mailer.transport.sendMail({
-            from: mailer.sendFrom,
-            to: mailer.sendTo,
+        const info = await transport.sendMail({
+            from: config.sendFrom,
+            to: config.sendTo,
             subject,
             text,
             html,

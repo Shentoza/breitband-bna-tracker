@@ -27,7 +27,7 @@ export async function getMailerConfig() {
     if (cfg?.mailer?.enabled === true) {
         return cfg.mailer;
     } else {
-        console.error("Mailer configuration missing in config.json");
+        return null;
     }
 }
 

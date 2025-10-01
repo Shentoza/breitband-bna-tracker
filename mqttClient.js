@@ -1,24 +1,33 @@
 import mqtt from "mqtt";
 import { getMqttConfig } from "./config.js";
 
-export function connectMqtt() {
-  const mqttJsonConfig = getMqttConfig();
+export async function connectMqtt() {
+  const mqttJsonConfig = await getMqttConfig();
   let mqttInfo = {};
   if (mqttJsonConfig) {
     mqttInfo = loadFromJson(mqttJsonConfig);
   } else {
-    mqttInfo = loadFromEnv();
+    mqttInfo = tryLoadFromEnv();
+  }
+  if (mqttInfo.enabled !== true) {
+    return null;
   }
 
-  console.log("Connecting to MQTT Broker...");
-  mqttInfo.client.on("connect", () => {
-    console.log("Connected to MQTT Broker");
-  });
-  mqttInfo.client.on("error", (err) => {
-    console.error("Connection error: ", err);
-  });
+  try {
+    console.log("Connecting to MQTT Broker...");
+    mqttInfo.client.on("connect", () => {
+      console.log("Connected to MQTT Broker");
+    });
+    mqttInfo.client.on("error", (err) => {
+      console.error("Connection error: ", err);
+    });
+    return mqttInfo;
+  }
+  catch (err) {
+    console.error("MQTT connection error: ", err);
+    return null;
+  }
 
-  return mqttInfo;
 }
 
 function loadFromJson(mqttJsonConfig) {
@@ -34,7 +43,11 @@ function loadFromJson(mqttJsonConfig) {
   return { client, topic };
 }
 
-function loadFromEnv() {
+function tryLoadFromEnv() {
+  if (!process.env.MQTT_SERVER) {
+    console.log("MQTT not configured");
+    return { client: null, topic: null, isEnabled: false };
+  }
   const client = mqtt.connect(process.env.MQTT_SERVER, {
     clientId: "breitbandmessung_client_" + Math.random().toString(16).slice(3),
     keepalive: 10,
@@ -59,8 +72,6 @@ export async function publishResult(mqttSender, result) {
         console.error("Publish error: ", error);
       }
     );
-    console.log(
-      `Published result to MQTT in topic ${topic} - Download: ${result["Download (Mbit/s)"]} Mbit/s | Upload: ${result["Upload (Mbit/s)"]} Mbit/s | Ping: ${result["Laufzeit (ms)"]} ms`
-    );
+    console.log(`Published result to MQTT in topic ${topic}`);
   }
 }
