@@ -5,7 +5,7 @@ import { EXPORT_PATH } from "./config.js";
 import { promises as fs } from "fs";
 import { connectMqtt, publishResult } from "./mqttClient.js";
 import dotenv from "dotenv";
-import { createMailer, sendFailureEmail, sendStatusEmail } from "./nodemailer.js";
+import { createMailer, sendStatusEmail } from "./nodemailer.js";
 import { readResultCsv } from "./csv.js";
 
 dotenv.config();
@@ -17,14 +17,15 @@ function getTimestamp() {
 
 await fs.chmod(EXPORT_PATH, "777");
 const mqtt = connectMqtt();
-
 const mailer = await createMailer();
 
 const onFinished = async (filePath) => {
   console.log(`${getTimestamp()} - Speedtest finished, CSV: ${filePath}`);
   const result = await readResultCsv(filePath);
-  publishResult(mqtt, result);
-  if (mailer?.sendStatus) {
+  if(mqtt?.isEnabled){
+    publishResult(mqtt, result);
+  }
+  if (mailer?.isEnabled && mailer?.sendStatus) {
     sendStatusEmail(mailer, result);
   }
 }

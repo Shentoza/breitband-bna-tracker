@@ -13,5 +13,15 @@
         "sendStatus": false,
         "sendTo": "recipient@mail.de",
         "sendFrom": "\"Sender Name\" <send@domain.com>"
+    },
+    "mqtt": {
+        "brokerConfig" : {
+            "server": "https://your.mqtt.broker:port",
+            "username": "yourusername",
+            "password": "yourpassword",
+            "topic": "mqtt-breitbandmessung"
+        },
+        "enabled": false,
+        "sendStatus": true
     }
 }
