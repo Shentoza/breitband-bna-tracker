@@ -5,7 +5,7 @@ import { EXPORT_PATH } from "./config.js";
 import { promises as fs } from "fs";
 import { connectMqtt, publishResult } from "./mqttClient.js";
 import dotenv from "dotenv";
-import { createMailer, sendFailureEmail, sendStatusEmail } from "./nodemailer.js";
+import { createMailer, sendStatusEmail } from "./nodemailer.js";
 import { readResultCsv } from "./csv.js";
 
 dotenv.config();
@@ -16,16 +16,23 @@ function getTimestamp() {
 }
 
 await fs.chmod(EXPORT_PATH, "777");
-const mqtt = connectMqtt();
-
+const mqtt = await connectMqtt();
 const mailer = await createMailer();
 
 const onFinished = async (filePath) => {
   console.log(`${getTimestamp()} - Speedtest finished, CSV: ${filePath}`);
-  const result = await readResultCsv(filePath);
-  publishResult(mqtt, result);
-  if (mailer?.sendStatus) {
-    sendStatusEmail(mailer, result);
+  try {
+    const result = await readResultCsv(filePath);
+    console.log(`Results -  Download: ${result["Download (Mbit/s)"]} Mbit/s | Upload: ${result["Upload (Mbit/s)"]} Mbit/s | Ping: ${result["Laufzeit (ms)"]} ms`);
+    if (mqtt?.isEnabled === true) {
+      publishResult(mqtt, result);
+    }
+    if (mailer?.config?.enabled === true && mailer?.config?.sendStatus === true) {
+      sendStatusEmail(mailer, result);
+    }
+  }
+  catch (err) {
+    console.error("Error processing speedtest result:", err);
   }
 }
 
@@ -47,5 +54,7 @@ try {
   }
 }
 finally {
-  mqtt.end();
+  if (mqtt?.isEnabled) {
+    mqtt?.client.end();
+  }
 }

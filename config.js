@@ -24,16 +24,16 @@ export async function readConfig() {
 
 export async function getMailerConfig() {
     const cfg = await readConfig();
-    if (cfg && cfg.mailer) {
+    if (cfg?.mailer?.enabled === true) {
         return cfg.mailer;
     } else {
-        console.error("Mailer configuration missing in config.json");
+        return null;
     }
 }
 
 export async function getMqttConfig() {
     const cfg = await readConfig();
-    if (cfg && cfg.mqtt) {
+    if (cfg?.mqtt?.enabled === true) {
         return cfg.mqtt;
     }
     return null;
