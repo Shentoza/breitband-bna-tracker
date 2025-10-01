@@ -75,4 +75,4 @@ Example config.json (minimal)
 }
 ```
 
-`SendStatus` - if true, it will also send "successful" test reports. In the future, it will only send failing ones, or ones that might be relevant to your campaign
+`sendStatus` - if true, it will also send "successful" test reports. In the future, it will only send failing ones, or ones that might be relevant to your campaign
