@@ -3,13 +3,12 @@ import { getMqttConfig } from "./config.js";
 
 export async function connectMqtt() {
   const mqttJsonConfig = await getMqttConfig();
-  let mqttInfo = {};
-  if (mqttJsonConfig) {
-    mqttInfo = loadFromJson(mqttJsonConfig);
-  } else {
+  let mqttInfo = tryLoadFromJson(mqttJsonConfig);
+  if (mqttInfo == null) {
     mqttInfo = tryLoadFromEnv();
   }
-  if (mqttInfo.enabled !== true) {
+  if (mqttInfo == null) {
+    console.log("MQTT not configured");
     return null;
   }
 
@@ -30,34 +29,47 @@ export async function connectMqtt() {
 
 }
 
-function loadFromJson(mqttJsonConfig) {
-  const client = mqtt.connect(mqttJsonConfig.brokerConfig.server, {
-    clientId: "breitbandmessung_client_" + Math.random().toString(16).slice(3),
-    keepalive: 10,
-    username: mqttJsonConfig.brokerConfig.username,
-    password: mqttJsonConfig.brokerConfig.password,
-    reconnectPeriod: 1000,
-    connectTimeout: 30 * 1000,
-  });
-  const topic = mqttJsonConfig.brokerConfig.topic;
-  return { client, topic };
+function tryLoadFromJson(mqttJsonConfig) {
+  if (mqttJsonConfig?.enabled === true) {
+    try {
+      const client = mqtt.connect(mqttJsonConfig.brokerConfig.server, {
+        clientId: "breitbandmessung_client_" + Math.random().toString(16).slice(3),
+        keepalive: 10,
+        username: mqttJsonConfig.brokerConfig.username,
+        password: mqttJsonConfig.brokerConfig.password,
+        reconnectPeriod: 1000,
+        connectTimeout: 30 * 1000,
+      });
+      const topic = mqttJsonConfig.brokerConfig.topic;
+      return { client, topic };
+    } catch (err) {
+      console.error("Error loading MQTT config from JSON:", err);
+      return null;
+    }
+  }
+  return null;
 }
 
 function tryLoadFromEnv() {
   if (!process.env.MQTT_SERVER) {
-    console.log("MQTT not configured");
-    return { client: null, topic: null, isEnabled: false };
+    return null;
   }
-  const client = mqtt.connect(process.env.MQTT_SERVER, {
-    clientId: "breitbandmessung_client_" + Math.random().toString(16).slice(3),
-    keepalive: 10,
-    username: process.env.MQTT_USER,
-    password: process.env.MQTT_PASSWORD,
-    reconnectPeriod: 1000,
-    connectTimeout: 30 * 1000,
-  });
-  const topic = process.env.MQTT_TOPIC || "mqtt-breitbandmessung";
-  return { client, topic };
+  try {
+    const client = mqtt.connect(process.env.MQTT_SERVER, {
+      clientId: "breitbandmessung_client_" + Math.random().toString(16).slice(3),
+      keepalive: 10,
+      username: process.env.MQTT_USER,
+      password: process.env.MQTT_PASSWORD,
+      reconnectPeriod: 1000,
+      connectTimeout: 30 * 1000,
+    });
+    const topic = process.env.MQTT_TOPIC || "mqtt-breitbandmessung";
+    return { client, topic };
+  }
+  catch (err) {
+    console.error("Error loading MQTT config from ENV:", err);
+    return null;
+  }
 }
 
 export async function publishResult(mqttSender, result) {
