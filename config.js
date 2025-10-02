@@ -38,3 +38,15 @@ export async function getMqttConfig() {
     }
     return null;
 }
+
+export async function checkExportWritable() {
+    // Try to write and remove a small temporary file inside EXPORT_PATH to verify write permissions.
+    const testFile = path.join(EXPORT_PATH, `.export_write_test_${Date.now()}.tmp`);
+    try {
+        await fs.writeFile(testFile, "ok");
+        await fs.unlink(testFile);
+        return { ok: true };
+    } catch (err) {
+        return { ok: false, error: err?.message || String(err) };
+    }
+}
