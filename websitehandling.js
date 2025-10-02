@@ -88,7 +88,6 @@ async function waitForCsvDownload(dir, timeout = 5000) {
     await new Promise((res) => setTimeout(res, 500));
     if (foundFile) break;
   }
-  await fs.chmod(dir, "777");
   return { filename: foundFile, fullpath: resolve(dir, foundFile) };
 }
 
