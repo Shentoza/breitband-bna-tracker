@@ -1,7 +1,7 @@
 import { promises as fs } from "fs";
 import { resolve } from "path";
 import puppeteer from "puppeteer";
-import { START_HEADLESS, EXPORT_PATH, BASE_URL } from "./config.js";
+import { EXPORT_PATH, BASE_URL } from "./config.js";
 
 export async function RunSpeedtest(onSuccess = async (filePath) => {
   console.log(`Speedtest completed. CSV file at: ${filePath}`);
@@ -51,7 +51,7 @@ export async function RunSpeedtest(onSuccess = async (filePath) => {
         return;
       }
       await clickButton(browser, page, selectors.download_results);
-      const newFile = await waitForCsvDownload(EXPORT_PATH, 5000);
+      const newFile = await waitForCsvDownload(EXPORT_PATH, 10);
       if (newFile) {
         onSuccess(newFile.fullpath);
       } else {
@@ -71,13 +71,13 @@ export async function RunSpeedtest(onSuccess = async (filePath) => {
   }
 };
 
-async function waitForCsvDownload(dir, timeout = 5000) {
+async function waitForCsvDownload(dir, waitInSec = 5) {
   console.log(dir);
   const startFiles = await fs.readdir(dir);
   const startSet = new Set(startFiles);
   let foundFile = null;
   const start = Date.now();
-  while (Date.now() - start < timeout) {
+  while (Date.now() - start < (waitInSec*1000)) {
     const files = await fs.readdir(dir);
     for (const file of files) {
       if (!startSet.has(file) && file.endsWith(".csv")) {
@@ -87,6 +87,10 @@ async function waitForCsvDownload(dir, timeout = 5000) {
     }
     await new Promise((res) => setTimeout(res, 500));
     if (foundFile) break;
+  }
+  if(!foundFile) {
+    console.error("Could not find downloaded CSV file within timeout");
+    return null;
   }
   return { filename: foundFile, fullpath: resolve(dir, foundFile) };
 }

@@ -1,12 +1,11 @@
 import {
   RunSpeedtest,
 } from "./websitehandling.js";
-import { EXPORT_PATH } from "./config.js";
-import { promises as fs } from "fs";
 import { connectMqtt, publishResult } from "./mqttClient.js";
 import dotenv from "dotenv";
 import { createMailer, sendStatusEmail } from "./nodemailer.js";
 import { readResultCsv } from "./csv.js";
+import { checkExportWritable, EXPORT_PATH } from "./config.js";
 
 dotenv.config();
 
@@ -16,6 +15,12 @@ function getTimestamp() {
 }
 const mqtt = await connectMqtt();
 const mailer = await createMailer();
+
+// Check if export path is writable early to catch permission issues.
+const exportCheck = await checkExportWritable();
+if (!exportCheck.ok) {
+  console.error(`EXPORT_PATH ${EXPORT_PATH} is not writable: ${exportCheck.error}`);
+}
 
 const onFinished = async (filePath) => {
   console.log(`${getTimestamp()} - Speedtest finished, CSV: ${filePath}`);
