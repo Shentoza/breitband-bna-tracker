@@ -20,8 +20,6 @@ const mailer = await createMailer();
 const exportCheck = await checkExportWritable();
 if (!exportCheck.ok) {
   console.error(`EXPORT_PATH ${EXPORT_PATH} is not writable: ${exportCheck.error}`);
-} else {
-  console.log(`EXPORT_PATH ${EXPORT_PATH} is writable.`);
 }
 
 const onFinished = async (filePath) => {
