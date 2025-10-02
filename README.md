@@ -17,7 +17,6 @@ Quick start (single run)
   ```
 
 Important environment variables
-- START_HEADLESS (true|false) — Puppeteer headless mode.
 - EXPORT_PATH — directory for CSV files inside container (default: /export).
 - INTERVAL_MINUTES — run interval in minutes (0 = one-off).
 

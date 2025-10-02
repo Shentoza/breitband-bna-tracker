@@ -1,15 +1,14 @@
 import { promises as fs } from "fs";
 import { resolve } from "path";
 import puppeteer from "puppeteer";
-import { EXPORT_PATH, BASE_URL } from "./config.js";
+import { EXPORT_PATH, BASE_URL, EXECUTABLE_PATH } from "./config.js";
 
 export async function RunSpeedtest(onSuccess = async (filePath) => {
   console.log(`Speedtest completed. CSV file at: ${filePath}`);
 }) {
   try {
-    const executablePath = process.env.CHROME_PATH || undefined; // For Docker chrome is installed. 
     const browser = await puppeteer.launch({
-      executablePath,
+      EXECUTABLE_PATH,
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });

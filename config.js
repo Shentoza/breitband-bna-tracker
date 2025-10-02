@@ -4,11 +4,10 @@ import { promises as fs } from "fs";
 
 dotenv.config();
 
-
-export const START_HEADLESS = process.env.START_HEADLESS || true;
-export const EXPORT_PATH = process.env.EXPORT_PATH || "/export/";
+export const EXPORT_PATH = process.env.EXPORT_PATH || "/usr/src/app/export/";
 export const BASE_URL = "https://breitbandmessung.de";
 export const MQTT_TOPIC = process.env.MQTT_TOPIC || "mqtt-breitbandmessung";
+export const EXECUTABLE_PATH = process.env.CHROME_PATH || undefined;
 
 export async function readConfig() {
     const cfgEnv = process.env.CONFIG_PATH || "./config.json";
