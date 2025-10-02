@@ -14,8 +14,6 @@ function getTimestamp() {
   const d = new Date();
   return `${d.toLocaleDateString('de-DE')} ${d.toLocaleTimeString('de-DE')}`;
 }
-
-await fs.chmod(EXPORT_PATH, "777");
 const mqtt = await connectMqtt();
 const mailer = await createMailer();
 
