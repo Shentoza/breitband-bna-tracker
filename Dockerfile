@@ -22,15 +22,11 @@ COPY ./*.js .
 
 # Ensure export dir exists and set ownership (allow failure)
 RUN mkdir -p ${EXPORT_PATH} 
-RUN chown node:node ${EXPORT_PATH} || true
+RUN chown node:node ${EXPORT_PATH}
 
 # Ensure config dir exists and copy default config
 RUN mkdir -p ${CONFIG_PATH}
 COPY ./config.json ${CONFIG_PATH}/config.json
-
-# Expose export and config as mount points
-VOLUME ${EXPORT_PATH}
-VOLUME ${CONFIG_PATH}
 
 # Run as unprivileged user
 USER node
