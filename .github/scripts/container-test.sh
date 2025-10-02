@@ -8,9 +8,6 @@ IMAGE=${1:-${IMAGE:-local/breitband:ci}}
 WORKDIR=${GITHUB_WORKSPACE:-$(pwd)}
 LOGFILE="$WORKDIR/container.log"
 CONFIG_JSON="$WORKDIR/config-ci.json"
-EXPORT_DIR="$WORKDIR/export"
-
-mkdir -p "$EXPORT_DIR"
 
 # ensure a CI config exists
 if [ ! -f "$CONFIG_JSON" ]; then
@@ -26,10 +23,7 @@ echo "Running container test for image: $IMAGE"
 
 docker run --rm \
   -e INTERVAL_MINUTES=0 \
-  -e START_HEADLESS=true \
-  -e EXPORT_PATH=/export \
   -e CONFIG_PATH=/usr/src/app/config.json \
-  -v "$EXPORT_DIR":/export \
   -v "$CONFIG_JSON":/usr/src/app/config.json:ro \
   "$IMAGE" 2>&1 | tee "$LOGFILE" || true
 

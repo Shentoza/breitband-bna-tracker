@@ -10,7 +10,7 @@ export async function RunSpeedtest(onSuccess = async (filePath) => {
     const executablePath = process.env.CHROME_PATH || undefined; // For Docker chrome is installed. 
     const browser = await puppeteer.launch({
       executablePath,
-      headless: START_HEADLESS,
+      headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
     });
     const context = browser.defaultBrowserContext();
