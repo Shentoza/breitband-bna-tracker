@@ -23,11 +23,3 @@ jobs:
 
       - name: Run container test against docker hub image
         run: ./.github/scripts/container-test.sh shentoza/breitband-bna-tracker:latest
-
-      - name: Upload logs and export files
-        uses: actions/upload-artifact@v4
-        with:
-          name: dockerhub-container-test-results
-          path: |
-            container.log
-            export

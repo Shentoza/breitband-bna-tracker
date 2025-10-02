@@ -31,11 +31,3 @@ jobs:
 
       - name: Run container test script
         run: ./.github/scripts/container-test.sh local/breitband:ci
-
-      - name: Upload logs and export files
-        uses: actions/upload-artifact@v4
-        with:
-          name: container-integration-results
-          path: |
-            container.log
-            export
