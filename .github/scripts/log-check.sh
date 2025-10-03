@@ -17,7 +17,7 @@ if [ ! -f "$LOGFILE" ]; then
   exit 2
 fi
 
-FATAL_PATTERNS="is not writable|EPERM: operation not permitted|EACCES: permission denied|chmod '/export'|Error starting puppeteer|Could not find Chrome|Failed to launch the browser process|UnhandledPromiseRejection|ERR_MODULE_NOT_FOUND|fatal error|uncaughtException|segmentation fault|panic|Error: Could not find Chrome|Error: Failed to launch the browser process"
+FATAL_PATTERNS="is not writable|EPERM: operation not permitted|EACCES: permission denied|chmod '/export'|Error starting puppeteer|Could not find Chrome|Failed to launch the browser process|UnhandledPromiseRejection|ERR_MODULE_NOT_FOUND|fatal error|uncaughtException|segmentation fault|panic|Error: Could not find Chrome|Error: Failed to launch the browser process|Could not find downloaded CSV file within timeout"
 
 if grep -iE "$FATAL_PATTERNS" "$LOGFILE" >/dev/null 2>&1; then
   echo "ERROR: Fatal issue detected in logs (matching patterns)."
