@@ -26,8 +26,5 @@ jobs:
           platforms: linux/amd64
           tags: local/breitband:ci
 
-      - name: Make test script executable
-        run: chmod +x .github/scripts/container-test.sh
-
       - name: Run container test script
-        run: ./.github/scripts/container-test.sh local/breitband:ci
+        run: chmod +x .github/scripts/container-test.sh && ./.github/scripts/container-test.sh local/breitband:ci
