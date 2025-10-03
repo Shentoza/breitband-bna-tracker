@@ -40,8 +40,8 @@ function tryLoadFromJson(mqttJsonConfig) {
         reconnectPeriod: 1000,
         connectTimeout: 30 * 1000,
       });
-      const topic = mqttJsonConfig.brokerConfig.topic;
-      return { client, topic };
+      const { brokerConfig:_, ... rest } = mqttJsonConfig;
+      return { client, config: rest};
     } catch (err) {
       console.error("Error loading MQTT config from JSON:", err);
       return null;
@@ -64,7 +64,8 @@ function tryLoadFromEnv() {
       connectTimeout: 30 * 1000,
     });
     const topic = process.env.MQTT_TOPIC || "mqtt-breitbandmessung";
-    return { client, topic };
+    const config = { enabled: true, sendStatus: true, topic };
+    return { client, config };
   }
   catch (err) {
     console.error("Error loading MQTT config from ENV:", err);
@@ -73,17 +74,17 @@ function tryLoadFromEnv() {
 }
 
 export async function publishResult(mqttSender, result) {
-  const { client, topic } = mqttSender;
+  const { client, config } = mqttSender;
   if (result) {
     console.log(JSON.stringify(result));
     client.publishAsync(
-      topic,
+      config.topic,
       JSON.stringify(result),
       { qos: 0, retain: false },
       (error) => {
         console.error("Publish error: ", error);
       }
     );
-    console.log(`Published result to MQTT in topic ${topic}`);
+    console.log(`Published result to MQTT in topic ${config.topic}`);
   }
 }

@@ -27,7 +27,7 @@ const onFinished = async (filePath) => {
   try {
     const result = await readResultCsv(filePath);
     console.log(`Results -  Download: ${result["Download (Mbit/s)"]} Mbit/s | Upload: ${result["Upload (Mbit/s)"]} Mbit/s | Ping: ${result["Laufzeit (ms)"]} ms`);
-    if (mqtt?.isEnabled === true) {
+    if (mqtt?.config?.enabled === true && mqtt?.config?.sendStatus === true) {
       publishResult(mqtt, result);
     }
     if (mailer?.config?.enabled === true && mailer?.config?.sendStatus === true) {
@@ -57,7 +57,7 @@ try {
   }
 }
 finally {
-  if (mqtt?.isEnabled) {
+  if (mqtt?.client) {
     mqtt?.client.end();
   }
 }
