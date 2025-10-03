@@ -1,27 +1,27 @@
 {
     "mailer": {
         "smtp": {
-            "host": "your.smtp",
+            "host": "smtp.strato.de",
             "port": 465,
             "secure": true,
             "auth": {
-                "user": "user@domain.com",
-                "pass": "yourpassword"
+                "user": "noreply@auwes.de",
+                "pass": "V4*aL5bIeq8niqjm$#DQ"
             }
         },
-        "enabled": false,
+        "enabled": true,
         "sendStatus": false,
-        "sendTo": "recipient@mail.de",
-        "sendFrom": "\"Sender Name\" <send@domain.com>"
+        "sendTo": "joscha.auwaerter@outlook.com",
+        "sendFrom": "\"Breitbandmessung\" <noreply@auwes.de>"
     },
     "mqtt": {
         "brokerConfig" : {
-            "server": "https://your.mqtt.broker:port",
-            "username": "yourusername",
-            "password": "yourpassword"
+            "server": "https://192.168.178.10:1883",
+            "username": "aubee",
+            "password": "vTt6LLV1Xlg5j5"
         },
         "topic": "mqtt-breitbandmessung",
-        "enabled": false,
+        "enabled": true,
         "sendStatus": true
     }
 }
