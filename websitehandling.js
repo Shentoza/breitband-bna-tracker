@@ -50,7 +50,7 @@ export async function RunSpeedtest(onSuccess = async (filePath) => {
         return;
       }
       await clickButton(browser, page, selectors.download_results);
-      const newFile = await waitForCsvDownload(EXPORT_PATH, 10);
+      const newFile = await waitForCsvDownload(EXPORT_PATH, 15);
       if (newFile) {
         onSuccess(newFile.fullpath);
       } else {

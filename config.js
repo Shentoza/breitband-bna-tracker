@@ -8,10 +8,10 @@ export const EXPORT_PATH = process.env.EXPORT_PATH || "/usr/src/app/export/";
 export const BASE_URL = "https://breitbandmessung.de";
 export const MQTT_TOPIC = process.env.MQTT_TOPIC || "mqtt-breitbandmessung";
 export const EXECUTABLE_PATH = process.env.CHROME_PATH || undefined;
+export const CONFIG_PATH = process.env.CONFIG_PATH || "./config.json";
 
 export async function readConfig() {
-    const cfgEnv = process.env.CONFIG_PATH || "./config.json";
-    const configPath = cfgEnv.endsWith(".json") ? cfgEnv : path.join(cfgEnv, "config.json");
+    const configPath = CONFIG_PATH.endsWith(".json") ? CONFIG_PATH : path.join(CONFIG_PATH, "config.json");
     try {
         const content = await fs.readFile(configPath, "utf-8");
         return JSON.parse(content);

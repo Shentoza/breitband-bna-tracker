@@ -1,6 +1,6 @@
 {
   "name": "breitbandmessung-mqtt",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "main": "index.js",
   "license": "MIT",
   "type": "module",
@@ -13,5 +13,6 @@
     "mqtt": "^5.14.1",
     "nodemailer": "^7.0.6",
     "puppeteer": "^24.22.0"
-  }
+  },
+  "packageManager": "yarn@4.10.3"
 }

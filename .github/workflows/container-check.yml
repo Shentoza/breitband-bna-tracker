@@ -17,6 +17,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Read yarn version from package.json
+        id: yarn
+        run: |
+          node -e "const p=require('./package.json'); const m=p.packageManager||''; const v=(m.match(/yarn@([0-9]+\.[0-9]+\.[0-9]+)/)||[])[1]||'4.10.3'; console.log('yarn='+v)" >> $GITHUB_OUTPUT
+
       - name: Build image (load into local docker)
         uses: docker/build-push-action@v6
         with:
@@ -24,10 +29,9 @@ jobs:
           push: false
           load: true
           platforms: linux/amd64
+          build-args: |
+            YARN_VERSION=${{ steps.yarn.outputs.yarn }}
           tags: local/breitband:ci
 
-      - name: Make test script executable
-        run: chmod +x .github/scripts/container-test.sh
-
       - name: Run container test script
-        run: ./.github/scripts/container-test.sh local/breitband:ci
+        run: chmod +x .github/scripts/container-test.sh && ./.github/scripts/container-test.sh local/breitband:ci
