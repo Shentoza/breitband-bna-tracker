@@ -50,7 +50,7 @@ ENV PUPPETEER_EXECUTABLE_PATH=${CHROME_PATH}
 
 RUN corepack enable && corepack prepare yarn@${YARN_VERSION} --activate
 
-RUN yarn install --frozen-lockfile --production=false
+RUN yarn install --immutable --immutable-cache --check-cache
 
 # Copy app sources
 COPY ./*.js .

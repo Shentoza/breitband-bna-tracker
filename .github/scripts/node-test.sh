@@ -28,7 +28,7 @@ if command -v yarn >/dev/null 2>&1; then
   echo "Using yarn to install deps"
   corepack enable || true
   corepack prepare yarn@stable --activate || true
-  yarn install --frozen-lockfile
+  yarn install --immutable --immutable-cache --check-cache
 else
   echo "Yarn not found, using npm"
   npm ci || npm install

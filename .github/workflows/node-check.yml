@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  container-test:
+  check-as-node-app:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
