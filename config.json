@@ -18,9 +18,9 @@
         "brokerConfig" : {
             "server": "https://your.mqtt.broker:port",
             "username": "yourusername",
-            "password": "yourpassword",
-            "topic": "mqtt-breitbandmessung"
+            "password": "yourpassword"
         },
+        "topic": "mqtt-breitbandmessung",
         "enabled": false,
         "sendStatus": true
     }
