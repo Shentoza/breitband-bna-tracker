@@ -6,6 +6,16 @@ ENV EXPORT_PATH=/usr/src/app/export
 ENV CHROME_PATH=/usr/bin/chromium
 ENV CONFIG_PATH=/usr/src/app/config
 
+# Build-time app version (set via --build-arg APP_VERSION=...)
+ARG APP_VERSION=unspecified
+ENV APP_VERSION=${APP_VERSION}
+LABEL org.opencontainers.image.version=${APP_VERSION}
+
+# Yarn version to use in the image (set via --build-arg YARN_VERSION=...)
+ARG YARN_VERSION=4.10.3
+ENV YARN_VERSION=${YARN_VERSION}
+LABEL org.opencontainers.image.yarn_version=${YARN_VERSION}
+
 
 # Copy package files and install deps
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -33,6 +43,13 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 WORKDIR /usr/src/app
 COPY package.json yarn.lock ./
+
+# Ensure corepack is available and activate the pinned Yarn version before installing
+# so the image uses the same Yarn as the project (prevents errors when 'yarn' isn't present)
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=${CHROME_PATH}
+
+RUN corepack enable && corepack prepare yarn@${YARN_VERSION} --activate
 
 RUN yarn install --frozen-lockfile --production=false
 
