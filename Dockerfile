@@ -11,7 +11,6 @@ ARG APP_VERSION=unspecified
 ENV APP_VERSION=${APP_VERSION}
 LABEL org.opencontainers.image.version=${APP_VERSION}
 
-# Yarn version to use in the image (set via --build-arg YARN_VERSION=...)
 ARG YARN_VERSION=4.10.3
 ENV YARN_VERSION=${YARN_VERSION}
 LABEL org.opencontainers.image.yarn_version=${YARN_VERSION}
