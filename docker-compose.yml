@@ -1,0 +1,9 @@
+services:
+  breitband:
+    image: breitbandmessung:local
+    restart: unless-stopped
+    environment:
+      - INTERVAL_MINUTES=0
+    volumes:
+      - ./export:/usr/src/app/export:rw
+      - ./config.json:/usr/src/app/config/config.json:ro

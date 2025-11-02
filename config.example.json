@@ -29,12 +29,16 @@
             "provider": "Your ISP Name",
             "postcode": "12345",
             "planName": "100 Mbit/s VDSL",
-            "maximumDownloadSpeed": 100,
-            "averageDownloadSpeed": 80,
-            "minimumDownloadSpeed": 50,
-            "maximumUploadSpeed": 10,
-            "averageUploadSpeed": 8,
-            "minimumUploadSpeed": 5
+            "download": {
+                "max": 100,
+                "avg": 80,
+                "min": 50
+            },
+            "upload": {
+                "max": 10,
+                "avg": 8,
+                "min": 5
+            }
         },
         "enabled": true
     }
