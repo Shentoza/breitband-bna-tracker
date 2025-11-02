@@ -1,6 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
-import { promises as fs } from "fs";
+import fs from "fs/promises";
 import { ISPDetails } from "./contractChecker";
 
 dotenv.config();
@@ -67,7 +67,7 @@ export async function checkExportWritable() {
   }
 }
 
-export type Config = {
+type Config = {
   mailer: MailerConfig;
   mqtt: MqttConfig;
   contractChecking: ContractConfig;
@@ -81,7 +81,7 @@ export type MailerConfig = {
   smtp: MailerSmtpConfig;
 };
 
-export type MailerSmtpConfig = {
+type MailerSmtpConfig = {
   host: string;
   port: number;
   secure: boolean;
@@ -98,10 +98,10 @@ export type MqttConfig = {
   sendStatus: boolean;
 };
 
-export type MqttBrokerConfig = {
+type MqttBrokerConfig = {
   server: string;
   username: string;
   password: string;
 };
 
-export type ContractConfig = ISPDetails & { enabled: boolean };
+type ContractConfig = ISPDetails & { enabled: boolean };

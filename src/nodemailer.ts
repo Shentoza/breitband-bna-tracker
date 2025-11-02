@@ -4,7 +4,7 @@ import { ParsedResult } from './csv';
 import { ContractCheckStatus, RatedResult } from './contractChecker';
 
 
-export type NodemailerClient = {
+type NodemailerClient = {
   transport: nodemailer.Transporter;
   config: Omit<MailerConfig, 'smtp'>;
 };

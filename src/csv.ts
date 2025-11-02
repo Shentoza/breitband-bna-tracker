@@ -1,4 +1,4 @@
-import { promises as fs } from "fs";
+import fs from "fs/promises";
 import { parse } from "csv-parse/sync";
 
 // Raw CSV row as returned by csv-parse (values are strings)

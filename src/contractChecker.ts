@@ -9,7 +9,7 @@ export type ISPDetails = {
     upload: SpeedDetails;
 }
 
-export type SpeedDetails = {
+type SpeedDetails = {
     max: number;
     avg: number;
     min: number;

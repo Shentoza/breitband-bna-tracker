@@ -10,7 +10,6 @@
     "test": "vitest",
     "test:watch": "vitest --watch",
     "build": "vite build",
-    "build:vite": "vite build",
     "knip": "knip"
   },
   "dependencies": {

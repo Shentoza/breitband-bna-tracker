@@ -97,7 +97,7 @@ export async function publishFailure(mqttClient: mqttClient, result: RatedResult
   console.log(`Published failure to MQTT in topic ${config.topic}/failure`);
 }
 
-export type mqttClient = {
+type mqttClient = {
   client: mqtt.MqttClient;
   config: Omit<MqttConfig, "brokerConfig">;
 };

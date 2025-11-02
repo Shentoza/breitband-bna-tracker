@@ -1,9 +1,10 @@
-import { connectMqtt, publishFailure, publishResult } from "./mqttClient.js";
+import { connectMqtt, publishFailure, publishResult } from "./mqttClient";
 import dotenv from "dotenv";
-import { createMailer, sendStatusEmail, sendViolatedEmail } from "./nodemailer.js";
-import { getResultFromFile } from './csv';
-import { checkExportWritable, EXPORT_PATH, getISPDetails } from "./config.js";
+import { createMailer, sendStatusEmail, sendViolatedEmail } from "./nodemailer";
+import { getResultFromFile } from "./csv";
+import { checkExportWritable, EXPORT_PATH, getISPDetails } from "./config";
 import { rateResult } from "./contractChecker";
+import { RunSpeedtest } from "./websitehandling.js";
 
 dotenv.config();
 
