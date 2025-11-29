@@ -1,13 +1,12 @@
 FROM node:24-bookworm-slim AS builder
-
-ARG YARN_VERSION=4.12.0
-ENV YARN_VERSION=${YARN_VERSION}
 WORKDIR /usr/src/app
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 COPY package.json yarn.lock .yarnrc.yml ./
-RUN corepack enable && corepack prepare yarn@${YARN_VERSION} --activate
+RUN corepack enable && \
+    YARN_PM=$(node -p "require('./package.json').packageManager") && \
+    corepack prepare "$YARN_PM" --activate
 RUN yarn install --immutable
 
 COPY tsconfig.json vite.config.ts ./

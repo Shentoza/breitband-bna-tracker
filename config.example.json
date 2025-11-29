@@ -40,6 +40,6 @@
                 "min": 5
             }
         },
-        "enabled": true
+        "enabled": false
     }
 }

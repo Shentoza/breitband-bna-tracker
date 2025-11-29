@@ -18,7 +18,10 @@ jobs:
           cache: 'yarn'
 
       - name: Enable Corepack
-        run: corepack enable
+        run: |
+          YARN_PM=$(node -p "require('./package.json').packageManager")
+          echo "Using Yarn from package.json: $YARN_PM"
+          corepack enable && corepack prepare "$YARN_PM" --activate
 
       - name: Install dependencies
         run: yarn install --immutable

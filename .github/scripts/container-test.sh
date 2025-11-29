@@ -7,16 +7,12 @@ IMAGE=${1:-${IMAGE:-local/breitband:ci}}
 
 WORKDIR=${GITHUB_WORKSPACE:-$(pwd)}
 LOGFILE="$WORKDIR/container.log"
-CONFIG_JSON="$WORKDIR/config-ci.json"
+CONFIG_JSON="$WORKDIR/config.example.json"
 
 # ensure a CI config exists
 if [ ! -f "$CONFIG_JSON" ]; then
-  cat > "$CONFIG_JSON" <<'JSON'
-{
-  "mailer": { "enabled": false, "sendStatus": false },
-  "mqtt": { "enabled": false }
-}
-JSON
+ echo "Config file not found: $CONFIG_JSON"
+ exit 1
 fi
 
 echo "Running container test for image: $IMAGE"
