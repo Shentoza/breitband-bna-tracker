@@ -5,8 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "start": "node src/index.ts",
-    "dev": "tsx watch src/index.ts",
+    "start": "tsx src/index.ts",
     "start:prod": "node dist/breitbandmessung-mqtt.js",
     "test": "vitest",
     "test:watch": "vitest --watch",
