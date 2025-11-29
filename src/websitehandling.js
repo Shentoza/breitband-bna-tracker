@@ -1,4 +1,4 @@
-import { promises as fs } from "fs";
+import fs from 'fs/promises';
 import { resolve } from "path";
 import puppeteer from "puppeteer";
 import { EXPORT_PATH, BASE_URL, EXECUTABLE_PATH } from "./config.js";

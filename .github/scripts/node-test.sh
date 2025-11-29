@@ -29,13 +29,15 @@ if command -v yarn >/dev/null 2>&1; then
   corepack enable || true
   corepack prepare yarn@stable --activate || true
   yarn install --immutable
+  yarn build
 else
   echo "Yarn not found, using npm"
   npm ci || npm install
+  npm run build
 fi
 
-# run node app (single run)
-INTERVAL_MINUTES=0 START_HEADLESS=true CONFIG_PATH="$CONFIG_JSON" EXPORT_PATH="$EXPORT_DIR" node index.js 2>&1 | tee "$LOGFILE" || true
+# run node app (single run) - use built bundle
+INTERVAL_MINUTES=0 START_HEADLESS=true CONFIG_PATH="$CONFIG_JSON" EXPORT_PATH="$EXPORT_DIR" node dist/breitbandmessung-mqtt.js 2>&1 | tee "$LOGFILE" || true
 
 # Patterns indicating fatal failures
 # Run consolidated log checks (also check export dir)

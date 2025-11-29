@@ -5,8 +5,37 @@ on:
   workflow_dispatch:
 
 jobs:
-  check-as-node-app:
+  test:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Enable Corepack
+        run: |
+          YARN_PM=$(node -p "require('./package.json').packageManager")
+          echo "Using Yarn from package.json: $YARN_PM"
+          corepack enable && corepack prepare "$YARN_PM" --activate
+          
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'yarn'
+
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Run unit tests
+        run: yarn test
+
+      - name: Build application
+        run: yarn build
+
+  integration-test:
+    runs-on: ubuntu-latest
+    needs: test
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -14,5 +43,5 @@ jobs:
       - name: Make node test script executable
         run: chmod +x .github/scripts/node-test.sh
 
-      - name: Run node app test
+      - name: Run node app integration test
         run: ./.github/scripts/node-test.sh

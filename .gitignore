@@ -21,3 +21,8 @@ lerna-debug.log*
 .env
 .env.*
 !.env.example
+
+config*.json*
+!config.example.json
+/dist/*
+/.vscode/*

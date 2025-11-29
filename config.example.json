@@ -15,7 +15,7 @@
         "sendFrom": "\"Sender Name\" <send@domain.com>"
     },
     "mqtt": {
-        "brokerConfig" : {
+        "brokerConfig": {
             "server": "https://your.mqtt.broker:port",
             "username": "yourusername",
             "password": "yourpassword"
@@ -23,5 +23,23 @@
         "topic": "mqtt-breitbandmessung",
         "enabled": false,
         "sendStatus": true
+    },
+    "contractChecking": {
+        "ispDetails": {
+            "provider": "Your ISP Name",
+            "postcode": "12345",
+            "planName": "100 Mbit/s VDSL",
+            "download": {
+                "max": 100,
+                "avg": 80,
+                "min": 50
+            },
+            "upload": {
+                "max": 10,
+                "avg": 8,
+                "min": 5
+            }
+        },
+        "enabled": false
     }
 }
