@@ -1,4 +1,3 @@
-import { readConfig } from './config.js';
 import { ParsedResult } from './csv.js';
 
 export type ISPDetails = {
@@ -16,16 +15,16 @@ type SpeedDetails = {
 }
 
 export type RatedResult = {
-    rawResult: ParsedResult;
+    parsedResult: ParsedResult;
     DownloadStatus: ContractCheckStatus;
     UploadStatus: ContractCheckStatus;
     isViolated: boolean;
 }
 
 export enum ContractCheckStatus {
-    OK = 0,
-    BelowAverage = 1,
-    BelowMinimum = 2,
+    OK = "OK",
+    BelowAverage = "BelowAverage",
+    BelowMinimum = "BelowMinimum",
 }
 
 export function rateValue(value: number, speedDetails: SpeedDetails): ContractCheckStatus {
@@ -42,9 +41,9 @@ export function rateResult(result: ParsedResult, ispDetails: ISPDetails): RatedR
     const downloadStatus = rateValue(result["Download (Mbit/s)"], ispDetails.download);
     const uploadStatus = rateValue(result["Upload (Mbit/s)"], ispDetails.upload);
     return {
-        rawResult: result,
+        parsedResult: result,
         DownloadStatus: downloadStatus,
         UploadStatus: uploadStatus,
-        isViolated: downloadStatus !== ContractCheckStatus.OK || uploadStatus !== ContractCheckStatus.OK
+        isViolated: (downloadStatus !== ContractCheckStatus.OK) || (uploadStatus !== ContractCheckStatus.OK)
     };
 }

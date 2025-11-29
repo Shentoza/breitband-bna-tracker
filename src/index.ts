@@ -1,4 +1,4 @@
-import { connectMqtt, publishFailure, publishResult } from "./mqttClient";
+import { connectMqtt, publishViolation, publishResult } from "./mqttClient";
 import dotenv from "dotenv";
 import { createMailer, sendStatusEmail, sendViolatedEmail } from "./nodemailer";
 import { getResultFromFile } from "./csv";
@@ -42,7 +42,7 @@ const onFinished = async (filePath: string) => {
             sendViolatedEmail(mailer, ratedResult);
           }
           if (mqtt?.config?.enabled === true) {
-            publishFailure(mqtt, ratedResult);
+            publishViolation(mqtt, ratedResult);
           }
         }
       } else {

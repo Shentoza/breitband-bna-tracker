@@ -85,16 +85,23 @@ export async function publishResult(
   console.log(`Published result to MQTT in topic ${config.topic}`);
 }
 
-export async function publishFailure(mqttClient: mqttClient, result: RatedResult) {
+export async function publishViolation(mqttClient: mqttClient, result: RatedResult) {
   const { client, config } = mqttClient;
 
-  const failurePackage = {
-    upload: result.DownloadStatus,
-    download: result.UploadStatus
+  const violationPackage = {
+    id: result.parsedResult["Test-ID"],
+    upload: {
+      rating: result.UploadStatus,
+      speed: result.parsedResult["Upload (Mbit/s)"]
+    },
+    download: {
+      rating: result.DownloadStatus,
+      speed: result.parsedResult["Download (Mbit/s)"]
+    }
   }
 
-  client.publishAsync(`${config.topic}/failure`, JSON.stringify(failurePackage));
-  console.log(`Published failure to MQTT in topic ${config.topic}/failure`);
+  client.publishAsync(`${config.topic}/violation`, JSON.stringify(violationPackage));
+  console.log(`Published failure to MQTT in topic ${config.topic}/violation`);
 }
 
 type mqttClient = {

@@ -99,7 +99,7 @@ const RatingToString = (status: ContractCheckStatus): string => {
 }
 
 export async function sendViolatedEmail(mailer: NodemailerClient, result: RatedResult) { 
-    const {ping, download, upload, dateTime} = extractMailData(result.rawResult);
+    const {ping, download, upload, dateTime} = extractMailData(result.parsedResult);
 
     const downloadRatingText = RatingToString(result.DownloadStatus);
     const uploadRatingText = RatingToString(result.UploadStatus);
@@ -107,7 +107,7 @@ export async function sendViolatedEmail(mailer: NodemailerClient, result: RatedR
     const worstRating = RatingToString(Math.max(result.DownloadStatus, result.UploadStatus));
     const subject = `Breitbandmessung ${worstRating}— ${download}↓ / ${upload}↑ / ${ping}ms`;
 
-    const text = `Messzeitpunkt: ${dateTime}\nDownload: ${download} Mbit/s${downloadRatingText}\nUpload: ${upload} Mbit/s${uploadRatingText}\nPing: ${ping} ms\nTest-ID: ${result.rawResult['Test-ID']}`;
+    const text = `Messzeitpunkt: ${dateTime}\nDownload: ${download} Mbit/s${downloadRatingText}\nUpload: ${upload} Mbit/s${uploadRatingText}\nPing: ${ping} ms\nTest-ID: ${result.parsedResult['Test-ID']}`;
 
     const html = `<p><strong>Breitbandmessung</strong> — ${dateTime}</p>
     <ul>
@@ -115,7 +115,7 @@ export async function sendViolatedEmail(mailer: NodemailerClient, result: RatedR
       <li><strong>Upload:</strong> ${upload} Mbit/s${uploadRatingText}</li>
       <li><strong>Ping:</strong> ${ping} ms</li>
     </ul>
-    ${result.rawResult['Test-ID'] ? `<p>Test-ID: <code>${result.rawResult['Test-ID']}</code></p>` : ''}`;
+    ${result.parsedResult['Test-ID'] ? `<p>Test-ID: <code>${result.parsedResult['Test-ID']}</code></p>` : ''}`;
 
     sendMail(mailer, { subject, text, html });
 

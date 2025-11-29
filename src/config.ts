@@ -41,10 +41,10 @@ export async function getMqttConfig(): Promise<MqttConfig | null> {
   return null;
 }
 
-export async function getISPDetails(): Promise<ContractConfig | null> {
+export async function getISPDetails(): Promise<ISPDetails | null> {
   const cfg = await readConfig();
   if (cfg?.contractChecking?.enabled === true) {
-    return cfg.contractChecking;
+    return cfg.contractChecking.ispDetails;
   }
   return null;
 }
@@ -104,4 +104,7 @@ type MqttBrokerConfig = {
   password: string;
 };
 
-type ContractConfig = ISPDetails & { enabled: boolean };
+type ContractConfig = {
+  enabled: boolean;
+  ispDetails: ISPDetails;
+};
