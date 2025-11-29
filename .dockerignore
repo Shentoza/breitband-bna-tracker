@@ -1,0 +1,11 @@
+# Exclude local artifacts not needed for build context
+export/
+.test/
+node_modules/
+.vscode/
+.git/
+.gitignore
+README.md
+LICENSE
+Dockerfile
+yarn-error.log

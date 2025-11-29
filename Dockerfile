@@ -1,32 +1,24 @@
-### Multi-stage Dockerfile: builder -> runtime
 FROM node:24-bookworm-slim AS builder
 
-ARG YARN_VERSION=4.10.3
+ARG YARN_VERSION=4.12.0
 ENV YARN_VERSION=${YARN_VERSION}
 WORKDIR /usr/src/app
 
-# Ensure Puppeteer does not download Chromium during build (we'll use system chromium in runtime)
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-COPY package.json yarn.lock ./
-
+COPY package.json yarn.lock .yarnrc.yml ./
 RUN corepack enable && corepack prepare yarn@${YARN_VERSION} --activate
 RUN yarn install --immutable
 
-# Copy source files and build
-RUN yarn install --immutable
-COPY src/ ./src/
 COPY tsconfig.json vite.config.ts ./
+COPY src/ ./src/
 RUN yarn build
-RUN yarn workspaces focus --production || yarn install --production
 
-# Install only production dependencies with Yarn
 RUN rm -rf node_modules yarn.lock
 RUN node -e "const pkg=require('./package.json'); delete pkg.devDependencies; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2))"
 RUN yarn install
 
 
-### Runtime image: only runtime artifacts + minimal libraries for Chromium
 FROM node:24-bookworm-slim AS runtime
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -64,9 +56,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy node_modules and built bundle from builder
+COPY --from=builder /usr/src/app/package.json ./package.json
+COPY --from=builder /usr/src/app/yarn.lock ./yarn.lock
+COPY --from=builder /usr/src/app/dist ./dist
 COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/dist/breitbandmessung-mqtt.js ./dist
 
 # Ensure export dir exists and set ownership
 RUN mkdir -p ${EXPORT_PATH} && chown node:node ${EXPORT_PATH}
