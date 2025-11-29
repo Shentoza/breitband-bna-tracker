@@ -5,15 +5,25 @@ ARG YARN_VERSION=4.10.3
 ENV YARN_VERSION=${YARN_VERSION}
 WORKDIR /usr/src/app
 
+# Ensure Puppeteer does not download Chromium during build (we'll use system chromium in runtime)
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 COPY package.json yarn.lock ./
 
-
 RUN corepack enable && corepack prepare yarn@${YARN_VERSION} --activate
-RUN yarn install --immutable --production=true || npm install --no-audit --no-fund --production
+RUN yarn install --immutable
 
-# Copy only sources needed for runtime
-COPY ./*.js ./
+# Copy source files and build
+RUN yarn install --immutable
+COPY src/ ./src/
+COPY tsconfig.json vite.config.ts ./
+RUN yarn build
+RUN yarn workspaces focus --production || yarn install --production
+
+# Install only production dependencies with Yarn
+RUN rm -rf node_modules yarn.lock
+RUN node -e "const pkg=require('./package.json'); delete pkg.devDependencies; require('fs').writeFileSync('./package.json', JSON.stringify(pkg, null, 2))"
+RUN yarn install
 
 
 ### Runtime image: only runtime artifacts + minimal libraries for Chromium
@@ -54,9 +64,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy node_modules and app sources from builder
+# Copy node_modules and built bundle from builder
 COPY --from=builder /usr/src/app/node_modules ./node_modules
-COPY --from=builder /usr/src/app/*.js ./
+COPY --from=builder /usr/src/app/dist/breitbandmessung-mqtt.js ./dist
 
 # Ensure export dir exists and set ownership
 RUN mkdir -p ${EXPORT_PATH} && chown node:node ${EXPORT_PATH}
@@ -69,4 +79,4 @@ COPY ./config.json ${CONFIG_PATH}/config.json
 USER node
 
 ENV PUPPETEER_EXECUTABLE_PATH=${CHROME_PATH}
-CMD ["node", "index.js"]
+CMD ["node", "dist/breitbandmessung-mqtt.js"]
