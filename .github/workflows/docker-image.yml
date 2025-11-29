@@ -47,3 +47,10 @@ jobs:
             shentoza/breitband-bna-tracker:latest
           cache-from: type=registry,ref=shentoza/breitband-bna-tracker:buildcache
           cache-to: type=registry,ref=shentoza/breitband-bna-tracker:buildcache,mode=max
+
+      - name: Update Docker Hub description
+        uses: peter-evans/dockerhub-description@v5
+        with:
+          username: ${{ vars.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: shentoza/breitband-bna-tracker

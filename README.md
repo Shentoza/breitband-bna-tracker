@@ -1,6 +1,6 @@
 # Breitbandmessung.de automated
 
-A script to enable customers of lazy ISPs to perform measurement campaigns of the connection speed as described [here](https://breitbandmessung.de/desktop-app) in an automated way.
+Automates repeated connection speed measurements as described on the official desktop app page: [breitbandmessung.de/desktop-app](https://breitbandmessung.de/desktop-app).
 
 ## Usage
 
@@ -49,7 +49,44 @@ If both json and env variables are configured, the json config is preferred. A m
     }
 }
 ```
-You can disable the `sendStatus` flag. In a later patch I want to make it possible, so it will check the results against your ISP contract, and give you a message if it violates it.
+You can disable `sendStatus` so only violation messages (when `contractChecking.enabled` is true and a minimum threshold is missed) are published. If `contractChecking` is disabled and `sendStatus` is false nothing is sent.
+
+## Contract Checking Configuration
+The `contractChecking` section (optional) lets the tool compare measured speeds against your ISP plan thresholds. When enabled, each result is rated for download and upload and a violation can be published (MQTT) or mailed.
+
+Fields:
+- `enabled`: Set to `true` to activate contract comparisons.
+- `ispDetails.provider`: Free text name of your ISP.
+- `ispDetails.postcode`: Optional postcode (purely informational in output).
+- `ispDetails.planName`: Descriptive plan label (e.g. "250 Mbit/s Glasfaser").
+- `ispDetails.download` / `upload`: Objects with numeric `max`, `avg`, `min` values in Mbit/s representing the advertised or contractual speeds:
+  - `max`: The theoretical or marketed upper bound.
+  - `avg`: The expected average performance promised.
+  - `min`: The minimum guaranteed (critical threshold). Falling below this typically triggers a violation status.
+
+Example:
+```json
+{
+  "contractChecking": {
+    "enabled": true,
+    "ispDetails": {
+      "provider": "Your ISP Name",
+      "postcode": "12345",
+      "planName": "100 Mbit/s VDSL",
+      "download": { "max": 100, "avg": 80, "min": 50 },
+      "upload":   { "max": 10,  "avg": 8,  "min": 5 }
+    }
+  }
+}
+```
+
+How it is used:
+1. Each test result is compared against `min` and `avg` for both directions.
+2. Status levels (internally) distinguish below minimum, below average, or OK.
+3. A combined violation flag (`isViolated`) is raised if either direction is below its `min`.
+4. When violations occur and MQTT/email are enabled, a notification can be sent.
+
+If `contractChecking.enabled` is `false`, no rating logic is applied and only raw results / status mails (if configured) are emitted.
 
 ## SMTP Configuration
 Note about SMTP configuration
@@ -74,4 +111,4 @@ Example config.json (minimal)
 }
 ```
 
-`sendStatus` - if true, it will also send "successful" test reports. In the future, it will only send failing ones, or ones that might be relevant to your campaign
+`sendStatus` – when true normal successful measurements generate mails; when false only violation mails are sent (provided `contractChecking.enabled` is true and a minimum value is missed).
