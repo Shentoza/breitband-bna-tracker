@@ -22,9 +22,9 @@ export type RatedResult = {
 }
 
 export enum ContractCheckStatus {
-    OK = "OK",
-    BelowAverage = "BelowAverage",
-    BelowMinimum = "BelowMinimum",
+    OK = 0,
+    BelowAverage = 1,
+    BelowMinimum = 2,
 }
 
 export function rateValue(value: number, speedDetails: SpeedDetails): ContractCheckStatus {
