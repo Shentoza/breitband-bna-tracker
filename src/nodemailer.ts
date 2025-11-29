@@ -61,7 +61,7 @@ async function sendMail(mailer: NodemailerClient, mail: ResultMail) {
 }
 
 function extractMailData(result: ParsedResult): MailData {
-    const ping = result['Laufzeit (ms)'].toLocaleString() + ' ms';
+    const ping = result['Laufzeit (ms)']?.toLocaleString() + ' ms';
     const download = result['Download (Mbit/s)']?.toLocaleString() + ' Mbit/s';
     const upload = result['Upload (Mbit/s)']?.toLocaleString() + ' Mbit/s';
     const dateTime = result.parsedDateTime?.toLocaleString('de-DE');
