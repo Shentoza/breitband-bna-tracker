@@ -11,17 +11,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Enable Corepack
+        run: |
+          YARN_PM=$(node -p "require('./package.json').packageManager")
+          echo "Using Yarn from package.json: $YARN_PM"
+          corepack enable && corepack prepare "$YARN_PM" --activate
+          
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: 'yarn'
 
-      - name: Enable Corepack
-        run: |
-          YARN_PM=$(node -p "require('./package.json').packageManager")
-          echo "Using Yarn from package.json: $YARN_PM"
-          corepack enable && corepack prepare "$YARN_PM" --activate
 
       - name: Install dependencies
         run: yarn install --immutable

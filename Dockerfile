@@ -65,7 +65,7 @@ RUN mkdir -p ${EXPORT_PATH} && chown node:node ${EXPORT_PATH}
 
 # Ensure config dir exists and copy default config
 RUN mkdir -p ${CONFIG_PATH}
-COPY ./config.json ${CONFIG_PATH}/config.json
+COPY ./config.example.json ${CONFIG_PATH}/config.json
 
 # Run as non-root
 USER node
