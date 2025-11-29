@@ -76,7 +76,7 @@ export async function parseCsvContent(
     "Test-ID": rawCSV["Test-ID"],
     Version: rawCSV["Version"],
     Betriebssystem: rawCSV["Betriebssystem"],
-    Browser: rawCSV["Browser"],
+    Browser: rawCSV["Internet-Browser"],
     Messzeitpunkt: rawCSV["Messzeitpunkt"],
     Uhrzeit: rawCSV["Uhrzeit"],
     parsedDateTime: parseGermanDateTime(
